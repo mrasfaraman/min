@@ -15,10 +15,6 @@ import AssetGraph from '../../assets/images/asset_graph.png';
 import AssetLasticon from '../../assets/images/asset_last_icon.png';
 import { ThemeContext } from '../../context/ThemeContext';
 import MaroonSpinner from '../Loader/MaroonSpinner';
-import {useTranslation} from 'react-i18next';
-import i18n from "../../pages/i18n";
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useAuth } from '../../context/AuthContext';
 
@@ -49,20 +45,7 @@ const MainAssets = ({ navigation, address }) => {
     return () => clearTimeout(timer);
   }, [selectedAccount]);
   // ///////////////////////////////////////////////////////////////////////////////////////////////////
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
+
   const RenderCard = ({ item }) => {
 
     let solActive = item?.rpc === undefined ? activeNet?.type === "solana" : false;
@@ -184,7 +167,7 @@ const MainAssets = ({ navigation, address }) => {
         <>
           <View style={styles.assetHeader}>
             <Text style={[styles.assetHeaderText, { color: theme.text }]}>
-            {t('assets')}
+              Assets
             </Text>
             {isGrid && (
               <View

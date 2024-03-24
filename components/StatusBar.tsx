@@ -5,12 +5,7 @@ import { ThemeContext } from '../context/ThemeContext';
 
 function StatusBar() {
     const {theme} = useContext(ThemeContext);
-    return (
-      <NativeStatusBar
-        backgroundColor={theme.screenBackgroud}
-        barStyle={theme.type == 'dark' ? 'light-content' : 'dark-content'}
-      />
-    );
-  }
+    return ( <NativeStatusBar backgroundColor={theme.screenBackgroud} /> );
+}
 
 export default StatusBar;

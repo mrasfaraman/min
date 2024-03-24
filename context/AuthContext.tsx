@@ -39,7 +39,8 @@ interface AuthContextType {
   setSelectedAccount: (account: Account | null) => void;
   Accounts: Account[];
   addAccount: (newAccount: Account) => void;
-  removeAccount: (accountId: number) => void;
+  removeAccount: (index: number) => void;
+  updateAccountName : (index: number, newName: string) => void,
   Networks: Networks[];
   setNetworks: (Networks: any) => void;
   addNetwork: (newAccount: Networks) => void;
@@ -96,11 +97,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setAccounts(prevAccounts => [...prevAccounts, newAccount]);
   };
 
-  const removeAccount = (accountId: number) => {
-    setAccounts(prevAccounts =>
-      prevAccounts.filter(account => account.id !== accountId),
-    );
+  const removeAccount = (index: number) => {
+    setAccounts(prevAccounts => {
+      // Create a copy of the current accounts array
+      const updatedAccounts = [...prevAccounts];
+      // Remove the account at the specified index
+      updatedAccounts.splice(index, 1);
+      // Update AsyncStorage with the updated accounts array
+      AsyncStorage.setItem('Accounts', JSON.stringify(updatedAccounts))
+        .then(() => {
+          console.log('Account removed from AsyncStorage');
+        })
+        .catch((error) => {
+          console.error('Failed to remove Account from AsyncStorage', error);
+        });
+      // Return the updated accounts array to update the state
+      return updatedAccounts;
+    });
   };
+  const updateAccountName = async (index: number, newName: string) => {
+    setAccounts(prevAccounts => {
+      const updatedAccounts = [...prevAccounts];
+      if(index >= 0 && index < updatedAccounts.length) {
+        const accountToUpdate = updatedAccounts[index];
+        const updatedAccount = { ...accountToUpdate, name: newName };
+        updatedAccounts[index] = updatedAccount;
+        setSelectedAccount(updatedAccount);
+        // Asynchronously update AsyncStorage with the new list of accounts
+        AsyncStorage.setItem('Accounts', JSON.stringify(updatedAccounts))
+          .then(() => {console.log('Account name updated successfully')})
+          .catch((error) => console.error('Failed to update account name in AsyncStorage', error));
+      }
+    
+      return updatedAccounts;
+    });
+  };
+  
 
   const addNetwork = async (newNetwork: Networks) => {
     setNetworks(prevNetworks => [...prevNetworks, newNetwork]);
@@ -246,6 +278,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     Tokens,
     addToken,
     updateToken,
+    updateAccountName
   };
 
   return (

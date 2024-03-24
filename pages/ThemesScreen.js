@@ -10,10 +10,8 @@ import Header from '../components/header';
 import {ThemeContext} from '../context/ThemeContext';
 
 export default function ThemesScreen({navigation}) {
+  const [selected, setSelected] = useState('');
   const {theme, switchTheme} = useContext(ThemeContext);
-  const [selected, setSelected] = useState(
-    theme?.name ? theme?.name.slice(-1) : '',
-  );
   return (
     <ScrollView style={{backgroundColor: theme.screenBackgroud}}>
       <Header

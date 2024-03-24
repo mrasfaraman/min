@@ -1,4 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   FlatList,
   Image,
@@ -12,144 +12,42 @@ import {
 import {RadioButton} from 'react-native-paper';
 import Header from '../components/header';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CURRENCIES = [
   {
     currency: 'AUD $',
-    currencyname: 'aud',
-    symbol: '$',
   },
   {
     currency: 'CAD $',
-    currencyname: 'cad',
-    symbol: '$',
   },
   {
     currency: 'USD $',
-    currencyname: 'usd',
-    symbol: '$',
   },
   {
     currency: 'EUR €',
-    currencyname: 'eur',
-    symbol: '€',
   },
   {
     currency: 'YEN ¥',
-    currencyname: 'yen',
-    symbol: '¥',
   },
   {
     currency: 'HKD $',
-    currencyname: 'hkd',
-    symbol: '$',
   },
   {
-    currency: 'GBP £',
-    symbol: '£', // Changed symbol
-    currencyname: 'gbp',
+    currency: 'GBP € ',
   },
   {
-    currency: 'DKK KR',
-    symbol: 'KR',
-    currencyname: 'dkk',
+    currency: 'DKK KR.',
   },
 ];
 export default function CurrencyScreen({navigation}) {
   const [currency, setCurrency] = useState('USD $');
-  const [currencycode, setCurrencycode] = useState('usd');
-  const [currencyS, setCurrencyS] = useState('$');
-
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage);
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
 
-  useEffect(() => {
-    const loadSelectedCurrency = async () => {
-      try {
-        const selectedCurrency = await AsyncStorage.getItem('selectedCurrency');
-        if (selectedCurrency) {
-          setCurrency(selectedCurrency);
-        }
-      } catch (error) {
-        console.error('Error loading selected currency:', error);
-      }
-    };
-    loadSelectedCurrency();
-  }, []);
-
-  const handleCurrencyChange = async (curr) => {
-    try {
-      await AsyncStorage.setItem('selectedCurrency', curr);
-
-      console.log('Selected Currency:', curr);
-      setCurrency(curr);
-    } catch (error) {
-      console.error('Error storing selected currency:', error);
-    }
-  };
-
-
-
-  const handleCurrencycode = async (curr) => {
-    try {
-      await AsyncStorage.setItem('selectedCode', curr);
-
-      console.log('Selected Currency code:', curr);
-      setCurrencycode(curr);
-    } catch (error) {
-      console.error('Error storing selected currency code:', error);
-    }
-  };
-
-  useEffect(() => {
-    const loadSelectedCurrencyS = async () => {
-      try {
-        const selectedCurrencyS = await AsyncStorage.getItem('selectedS');
-        if (selectedCurrencyS) {
-          setCurrencyS(selectedCurrencyS);
-        }
-      } catch (error) {
-        console.error('Error loading selected currency S:', error);
-      }
-    };
-    loadSelectedCurrencyS();
-  }, []);
-  const handleCurrencycodeS = async (curr) => {
-    try {
-      await AsyncStorage.setItem('selectedS', curr);
-
-      console.log('Selected Currency S:', curr);
-      setCurrencyS(curr);
-    } catch (error) {
-      console.error('Error storing selected currency S:', error);
-    }
-  };
   function renderItem({item}) {
     // const {flag} = item;
     return (
       <TouchableOpacity
-        onPress={() =>{
-          
-          handleCurrencyChange(item.currency)
-          handleCurrencycode(item.currencyname)
-          handleCurrencycodeS(item.symbol)
-        }}
+        onPress={() => setCurrency(item.currency)}
         style={
           currency === item.currency
             ? [
@@ -184,7 +82,7 @@ export default function CurrencyScreen({navigation}) {
   return (
     <ScrollView style={{backgroundColor: theme.screenBackgroud}}>
       <Header
-        title={t('currency')}
+        title={'Currency'}
         skipOption={false}
         onBack={() => navigation.goBack()}
       />
@@ -192,11 +90,7 @@ export default function CurrencyScreen({navigation}) {
         <View style={[styles.input, {backgroundColor: theme.menuItemBG}]}>
           <Image
             style={styles.imgStyle}
-            source={
-              theme.type == 'dark'
-                ? require('../assets/images/search-md.png')
-                : require('../assets/images/list-search-dark.png')
-            }
+            source={theme.type == 'dark' ? require('../assets/images/search-md.png') : require('../assets/images/list-search-dark.png')}
           />
           <TextInput
             style={[styles.searchInput, {color: theme.text}]}

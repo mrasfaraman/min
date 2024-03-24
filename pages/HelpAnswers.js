@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   Image,
   ScrollView,
@@ -15,26 +15,9 @@ import ListSearchDark from '../assets/images/list-search-dark.png';
 import HeadPhones from '../assets/images/headphones.png';
 import MessageIcon from '../assets/images/chat-dots.png';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HelpAnswers = ({navigation}) => {
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
   const data = [
     {
       question: 'q. What payment methods are supported?',
@@ -79,11 +62,10 @@ const HelpAnswers = ({navigation}) => {
           </View>
         </View>
         <Text style={[styles.helpMessageText, {color: theme.text}]}>
-        {t('still_need_help_contact_our_support_team')}
-
+          still need help? contact our support team
         </Text>
         <TouchableOpacity style={[styles.messageButtonWrapper, {backgroundColor: theme.emphasis}]}>
-          <Text style={[styles.messageButtonText, {color: '#fff'}]}> {t('message_us')}</Text>
+          <Text style={[styles.messageButtonText, {color: '#fff'}]}>Message Us</Text>
           <View>
             <Image source={MessageIcon} width={20} height={20} />
           </View>

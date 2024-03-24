@@ -18,9 +18,6 @@ import { useAuth } from '../context/AuthContext';
 import { getEvmTrx , getsolTrxsignatures , getsolTrx} from '../utils/function';
 import MaroonSpinner from '../components/Loader/MaroonSpinner';
 import Trancactions from '../components/Transactions/Transactions';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 function convertEpochToLocalStandardTime(epochTime) {
   // Create a new Date object using the epoch time
@@ -64,20 +61,7 @@ export default function TransactionRecordScreen({ navigation }) {
     Networks,
     selectedNetwork
   } = useAuth();
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
+
   // const Network = activeNet?.type;
   // const [activeAccount, setActiveAccount] = useState();
   // const [activeNet, setActiveNet] = useState()
@@ -267,7 +251,7 @@ export default function TransactionRecordScreen({ navigation }) {
   return (
     <View style={{flex: 1}}>
      <ScrollView style={[styles.screen, {backgroundColor: theme.screenBackgroud }]}>
-        <Header title={t('transaction_record')} onBack={() => navigation.goBack()} />
+        <Header title="Transaction Record" onBack={() => navigation.goBack()} />
         {/* <View style={styles.container}>
         {Loader ? <MaroonSpinner /> :
         <>

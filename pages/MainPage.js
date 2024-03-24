@@ -1,12 +1,5 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {
-  ScrollView,
-  Alert,
-  StyleSheet,
-  View,
-  Text,
-  ToastAndroid,
-} from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { ScrollView, Alert, StyleSheet, View, Text } from 'react-native';
 import MainHeader from '../components/MainPage/MainHeader';
 import CreditCard from '../components/MainPage/CreditCard';
 import MainAssets from '../components/MainPage/MainAssets';
@@ -224,8 +217,8 @@ const MainPage = ({ route, navigation }) => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setAddress(JSON.stringify(Network === 'solana' ? selectedAccount.solana.publicKey : selectedAccount.evm.address));
-      setActiveAccount(JSON.stringify(Network === 'solana' ? selectedAccount.solana : selectedAccount.evm));
+      setAddress(JSON.stringify(Network === 'solana' ? selectedAccount.solana.publicKey : Network === 'btc' ? selectedAccount.btc.address :  Network === 'tron' ? selectedAccount.tron.address :  Network === 'doge' ? selectedAccount.doge.address : selectedAccount.evm.address));
+      setActiveAccount(JSON.stringify(Network === 'solana' ? selectedAccount.solana : Network === 'btc' ? selectedAccount.btc : Network === 'tron' ? selectedAccount.tron :Network === 'doge' ? selectedAccount.doge : selectedAccount.evm));
     }, 1000);
     return () => clearTimeout(timeoutId);
   }, [Network, selectedAccount]);

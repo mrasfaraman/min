@@ -17,10 +17,6 @@ import Header from '../components/header';
 import BottomMenu from '../components/BottomMenu';
 import {ThemeContext} from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import '@walletconnect/react-native-compat';
 import { Core } from '@walletconnect/core';
 import { Web3Wallet, Web3WalletTypes } from '@walletconnect/web3wallet'
@@ -30,20 +26,7 @@ import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-a
 const PanCakeList = ({ navigation }) => {
     const {theme} = useContext(ThemeContext);
     const {Session , wallet , removeSession} = useAuth();
-    const {t} = useTranslation();
-    useEffect(() => {
-      const loadSelectedLanguage = async () => {
-        try {
-          const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-          if (selectedLanguage) {
-            i18n.changeLanguage(selectedLanguage); 
-          }
-        } catch (error) {
-          console.error('Error loading selected language:', error);
-        }
-      };
-      loadSelectedLanguage();
-    }, []);
+
 
     const handleDisconnectPress = async (topic) => {
         console.log(topic)
@@ -128,7 +111,7 @@ const PanCakeList = ({ navigation }) => {
     return (
         <View style={{height:'100%' , backgroundColor: theme.screenBackgroud}}>
             <ScrollView style={[styles.MainWrapper, {backgroundColor: theme.screenBackgroud}]}>
-                <Header title={t('connections')} onBack={() => navigation.goBack()} />
+                <Header title={"Connections"} onBack={() => navigation.goBack()} />
                 {/* <View style={[styles.listSearchWrapper, {backgroundColor: theme.menuItemBG}]}> */}
                     {/* <Image source={theme.type == 'dark' ? ListSearch : ListSearchDark} alt="search" /> */}
                     {/* <TextInput placeholder="Search" style={[{color: theme.text}, styles.listSearchText]} placeholderTextColor={theme.text} /> */}

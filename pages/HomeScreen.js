@@ -1,70 +1,51 @@
-import React, { useContext, useEffect } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View,TouchableHighlight, StyleSheet } from 'react-native';
+import React, {useContext} from 'react';
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import bg from '../assets/images/bg.png';
-import { ThemeContext } from '../context/ThemeContext';
-import { useAuth } from '../context/AuthContext';
-import { useTranslation } from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import SomeComponent from '../components/temp';
+import {ThemeContext} from '../context/ThemeContext';
+import {useAuth} from '../context/AuthContext';
 
-export default function HomeScreen({ navigation }) {
-  const { theme } = useContext(ThemeContext);
-  const { password } = useAuth();
+export default function HomeScreen({navigation}) {
+  const {theme} = useContext(ThemeContext);
+  const {password} = useAuth();
 
   if (password) {
     navigation.navigate('LoginScreen');
   }
 
-  const { t } = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage);
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
-
   return (
-    <ScrollView 
+    <ScrollView
       style={[styles.screen, {backgroundColor: theme.screenBackgroud}]}>
       <View style={styles.bgImg}>
         <Image source={bg} />
       </View>
       <View style={styles.content}>
         <Text style={[styles.textStyle, {color: theme.text}]}>
-         {t('the_only_crypto_wallet_you’d_ever_need')}
+          The only crypto wallet you’d ever need
         </Text>
+        {/* <SomeComponent /> */}
         <TouchableOpacity
           style={[styles.buttonStyle, {borderColor: theme.buttonBorder}]}
           onPress={() => navigation.navigate('CreateWalletScreen')}>
-          <Text style={[styles.btnText, {color: theme.text}]}>           
-           {t('get_started')}
-          </Text>
+          <Text style={[styles.btnText, {color: theme.text}]}>Get Started</Text>
         </TouchableOpacity>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 40, flexWrap:'wrap', }}>
         <Text style={[styles.textStyle, styles.terms, {color: theme.text}]}>
-            {t('by_tapping_get_started_you_agree_and_consent_to_our')}{' '}
+          By tapping “Get started” you agree and consent to our{' '}
+          <Text style={[styles.emphasis, {color: theme.emphasis}]}>
+            Terms & Service
+          </Text>{' '}
+          and{' '}
+          <Text style={[styles.emphasis, {color: theme.emphasis}]}>
+            Privacy Policy
           </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Term')}>
-          <Text style={[styles.emphasis, {color: theme.emphasis}]}>
-              {t('terms_&_service')}
-            </Text>
-          </TouchableOpacity>
-          <Text style={[styles.emphasis, {color: theme.emphasis}]}>
-            {' '}{t('and')}{' '}
-          </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Privacy')}>
-          <Text style={[styles.emphasis, {color: theme.emphasis}]}>
-              {t('privacy_policy')}
-            </Text>
-          </TouchableOpacity>
-        </View>
+        </Text>
       </View>
     </ScrollView>
   );

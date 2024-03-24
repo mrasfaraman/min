@@ -18,10 +18,6 @@ import Header from '../components/header';
 import {ThemeContext} from '../context/ThemeContext';
 import {useAuth} from '../context/AuthContext';
 import { authenticateFingerprint } from '../utils/BiometricUtils';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 export default function LoginScreen({navigation}) {
   const [showPassword, setShowPassword] = useState(true);
   const [passwordInput, setPasswordInput] = useState('');
@@ -29,20 +25,7 @@ export default function LoginScreen({navigation}) {
 
   const {theme} = useContext(ThemeContext);
   const {password, savePassword} = useAuth();
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
+
   function handleSubmit() {
     if (password !== passwordInput) {
       return setError('Password does not match!');
@@ -51,12 +34,12 @@ export default function LoginScreen({navigation}) {
   }
 
   async function handleSubmitfingerprint() {
-    let fingerprint = await authenticateFingerprint();
-    console.log(fingerprint);
+    let fingerprint = await authenticateFingerprint()
+    console.log(fingerprint)
     if (fingerprint) {
-      navigation.navigate('MainPage');
-      
+      navigation.navigate('MainPage')
     }
+
   }
 
 
@@ -75,25 +58,18 @@ export default function LoginScreen({navigation}) {
   return (
     <ScrollView style={{backgroundColor: theme.screenBackgroud}}>
       <View style={[styles.content, styles.textContainer, {marginTop: '50%'}]}>
-        <Text style={[styles.textStyle, {color: theme.text}]}>{t('sign_in')}</Text>
+        <Text style={[styles.textStyle, {color: theme.text}]}>Sign in</Text>
         <Text
           style={[styles.textStyle, styles.instruction, {color: theme.text}]}>
-          {t('sign_in_to_continue')}
+          Sign in to continue
         </Text>
       </View>
-      <View   style={[
-          styles.input,
-          {
-            // backgroundColor: theme.textInputBG,
-            borderColor: theme.addButtonBorder,
-            borderWidth: 1,
-          },
-        ]}>
+      <View style={[styles.input, {backgroundColor: theme.textInputBG}]}>
         <View style={styles.inputLock}>
           <Image source={theme.type == 'dark' ? lock : lockDark} />
           <TextInput
             style={{color: theme.text}}
-            placeholder={t('password')}
+            placeholder="password"
             placeholderTextColor={theme.text}
             onChangeText={newText => setPasswordInput(newText)}
             defaultValue={passwordInput}
@@ -112,7 +88,7 @@ export default function LoginScreen({navigation}) {
         )}
       </View>
       <SubmitBtn
-        title= {t('login')}
+        title="Login"
         // onPress={() => navigation.navigate('ResetPasswordScreen')}
         onPress={() => handleSubmit()}
       />

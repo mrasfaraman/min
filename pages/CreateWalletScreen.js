@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   Image,
   ScrollView,
@@ -11,33 +11,16 @@ import arrowLeft from '../assets/images/arrow-left.png';
 import check from '../assets/images/check.png';
 import bg from '../assets/images/createWalletBG.png';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateWalletScreen({navigation}) {
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
   return (
     <ScrollView style={{backgroundColor: theme.screenBackgroud}}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image source={arrowLeft} />
         </TouchableOpacity>
-        <Text style={[styles.title, {color: theme.text}]}> {t('create_wallet')}</Text>
+        <Text style={[styles.title, {color: theme.text}]}>Create Wallet</Text>
         <Image source={arrowLeft} style={{opacity: 0}} />
       </View>
       <View style={styles.bgImg}>
@@ -45,7 +28,7 @@ export default function CreateWalletScreen({navigation}) {
       </View>
       <View style={styles.content}>
         <Text style={[styles.textStyle, {color: theme.text}]}>
-        {t("the_only_crypto_wallet_you'd_ever_need")}
+          The only crypto wallet you’d ever need
         </Text>
         <View style={styles.promises}>
           <View
@@ -58,7 +41,7 @@ export default function CreateWalletScreen({navigation}) {
             ]}>
             <Image source={check} />
             <Text style={{color: theme.text}}>
-            {t('we_do_not_keep_a_copy_of_your_secret_key')}
+              We do not keep copy of your secret key
             </Text>
           </View>
           <View
@@ -71,7 +54,7 @@ export default function CreateWalletScreen({navigation}) {
             ]}>
             <Image source={check} />
             <Text style={{color: theme.text}}>
-            {t('we_do_not_keep_a_copy_of_your_secret_key')}
+              We do not keep copy of your secret key
             </Text>
           </View>
           <View
@@ -84,14 +67,14 @@ export default function CreateWalletScreen({navigation}) {
             ]}>
             <Image source={check} />
             <Text style={{color: theme.text}}>
-            {t('we_do_not_keep_a_copy_of_your_secret_key')}
+              We do not keep copy of your secret key
             </Text>
           </View>
         </View>
         <TouchableOpacity
           style={[styles.buttonStyle, {borderColor: theme.buttonBorder}]}
           onPress={() => navigation.navigate('RecoveryPhraseScreen')}>
-          <Text style={[styles.btnText, {color: theme.text}]}>{t('continue')}</Text>
+          <Text style={[styles.btnText, {color: theme.text}]}>Continue</Text>
         </TouchableOpacity>
         {/* <SubmitBtn
           title="Continue"

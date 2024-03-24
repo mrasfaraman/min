@@ -1,5 +1,4 @@
-import React, {useState, useContext, useEffect} from 'react';
-import 'intl-pluralrules';
+import React, {useState, useContext} from 'react';
 import {
   FlatList,
   Image,
@@ -13,109 +12,63 @@ import {
 import {RadioButton} from 'react-native-paper';
 import Header from '../components/header';
 import {ThemeContext} from '../context/ThemeContext';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
+
 const LANGUAGES = [
   {
     language: 'English',
-    lang: 'en',
+    lang: 'Eng',
     flag: require('../assets/images/Eng.png'),
   },
   {
     language: 'Indian',
-    lang: 'in',
+    lang: 'Indian',
     flag: require('../assets/images/Indian.png'),
   },
   {
-    language: 'Spanish',
-    lang: 'es',
+    language: 'Spain',
+    lang: 'Spain',
     flag: require('../assets/images/Spain.png'),
   },
   {
     language: 'French',
-    lang: 'fr',
+    lang: 'French',
     flag: require('../assets/images/French.png'),
   },
   {
     language: 'Russian',
-    lang: 'ru',
+    lang: 'Russian',
     flag: require('../assets/images/Russian.png'),
   },
   {
     language: 'Arabic',
-    lang: 'ar',
+    lang: 'Arabic',
     flag: require('../assets/images/Arabic.png'),
   },
   {
     language: 'German',
-    lang: 'de',
+    lang: 'German',
     flag: require('../assets/images/German.png'),
   },
   {
     language: 'Chinese',
-    lang: 'zh',
+    lang: 'Chinese',
     flag: require('../assets/images/Chinese.png'),
   },
   {
     language: 'English',
-    lang: 'uk',
+    lang: 'UK',
     flag: require('../assets/images/UK.png'),
   },
 ];
-
 export default function LanguageScreen({navigation}) {
-  const [language, setLanguage] = useState();
-  const [name, setName] = useState();
-
+  const [language, setLanguage] = useState('Eng');
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          setLanguage(selectedLanguage);
-          i18n.changeLanguage(selectedLanguage);
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
-
-  const setLanguageAndStore = async (lang, langName) => {
-    try {
-      await AsyncStorage.setItem('selectedLanguage', lang);
-      await AsyncStorage.setItem('selectedName', langName);
-      setLanguage(lang);
-      setName(langName);
-      i18n.changeLanguage(lang);
-    } catch (error) {
-      console.error('Error setting selected language:', error);
-    }
-  };
-
-  useEffect(() => {
-    const loadName = async () => {
-      try {
-        const savedName = await AsyncStorage.getItem('selectedName');
-        if (savedName) {
-          setName(savedName);
-        }
-      } catch (error) {
-        console.error('Error loading selected name:', error);
-      }
-    };
-    loadName();
-  }, []);
 
   function renderItem({item}) {
+    // const {flag} = item;
     return (
       <TouchableOpacity
-        onPress={() => setLanguageAndStore(item.lang, item.language)}
+        onPress={() => setLanguage(item.lang)}
         style={
           language === item.lang
             ? [
@@ -124,8 +77,7 @@ export default function LanguageScreen({navigation}) {
                   borderColor: theme.langItmBorder,
                 },
                 styles.item,
-                styles.selected,
-                {borderColor: theme.emphasis},
+                styles.selected,{ borderColor: theme.emphasis}
               ]
             : [
                 {
@@ -148,7 +100,7 @@ export default function LanguageScreen({navigation}) {
   return (
     <ScrollView style={{backgroundColor: theme.screenBackgroud}}>
       <Header
-        title={t('language')}
+        title={'Language'}
         skipOption={false}
         onBack={() => navigation.goBack()}
       />
@@ -156,11 +108,7 @@ export default function LanguageScreen({navigation}) {
         <View style={[styles.input, {backgroundColor: theme.menuItemBG}]}>
           <Image
             style={styles.imgStyle}
-            source={
-              theme.type == 'dark'
-                ? require('../assets/images/search-md.png')
-                : require('../assets/images/list-search-dark.png')
-            }
+            source={theme.type == 'dark' ? require('../assets/images/search-md.png') : require('../assets/images/list-search-dark.png')}
           />
           <TextInput
             style={[styles.searchInput, {color: theme.text}]}
@@ -168,9 +116,8 @@ export default function LanguageScreen({navigation}) {
             placeholderTextColor={theme.text}
           />
         </View>
-
         <RadioButton.Group
-          onValueChange={lang => setLanguageAndStore(lang)}
+          onValueChange={lang => setLanguage(lang)}
           value={language}>
           <FlatList data={LANGUAGES} renderItem={renderItem} />
         </RadioButton.Group>
@@ -180,6 +127,9 @@ export default function LanguageScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
+  // screen: {
+  //   // backgroundColor: '#280D2C',
+  // },
   container: {
     marginVertical: 24,
     marginHorizontal: 16,
@@ -190,22 +140,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderRadius: 16,
+    // border: 1px solid #313843;
     borderWidth: 1,
     borderStyle: 'solid',
+    // borderColor: '#313843',
+    // marginVertical: 12,
     marginBottom: 12,
+    // backgroundColor: '#362538',
   },
   itemLeft: {
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 14,
+    // justifyContent: 'center',
     gap: 8,
     alignItems: 'center',
+    // gap: 188,
+    // alignSelf: 'stretch',
   },
   selected: {
+    borderRadius: 16,
+    // border: '2px solid var(--Secodary, #F43459)',
     borderWidth: 2,
+    // borderColor: '#F43459',
+    borderStyle: 'solid',
+
+    // backgroundColor: '#362538',
   },
   input: {
     flexDirection: 'row',
+    // backgroundColor: '#362538',
     alignItems: 'center',
     padding: 14,
     paddingVertical: 0,
@@ -218,5 +182,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     minWidth: '100%',
+    // color: 'white',
   },
 });

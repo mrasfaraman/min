@@ -14,9 +14,7 @@ import { RadioButton } from 'react-native-paper';
 import Header from '../components/header';
 import { ThemeContext } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 export default function Networks({ navigation }) {
     const [currency, setCurrency] = useState('USD $');
@@ -27,24 +25,17 @@ export default function Networks({ navigation }) {
         let data = await JSON.parse(selectedNetwork)
         setActiveNet(data)
     }
-    const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
     const selectNetwork = async (item) => {
         await AsyncStorage.setItem('SelectedNetworks', JSON.stringify(item));
         setSelectedNetwork(item)
         setActiveNet(item)
+        navigation.navigate('MainPage')
+     
+        Toast.show({
+            type: ALERT_TYPE.INFO,
+            title: 'Switch Network',
+            textBody: `Network Switch to ${item?.networkName}`,
+          })
     }
     function renderItem({ item }) {
         // const {flag} = item;
@@ -88,12 +79,12 @@ export default function Networks({ navigation }) {
     return (
         <ScrollView style={{ backgroundColor: theme.screenBackgroud }}>
             <Header
-                title={t('networks')}
+                title={'Networks'}
                 skipOption={false}
                 onBack={() => navigation.goBack()}
             />
                  <View style={styles.itemLeft}>
-                 <Text style={[styles.title, {color: theme.text}]}>{t('selected_network')}</Text>
+                 <Text style={[styles.title, {color: theme.text}]}>Selected Network</Text>
                     <Text style={{ color: theme.text }}> {activeNet ? activeNet.networkName:""}</Text>
                 </View>
             <View style={styles.container}>

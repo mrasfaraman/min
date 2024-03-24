@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   Image,
   ScrollView,
@@ -13,26 +13,9 @@ import Header from '../components/header';
 import ProFileEditImg from '../assets/images/profile-edit-img.png';
 import AddImage from '../assets/images/add-image.png';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const EditProfile = () => {
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
   return (
     <ScrollView
       style={[styles.mainWrapper, {backgroundColor: theme.screenBackgroud}]}>
@@ -48,15 +31,14 @@ const EditProfile = () => {
             </View>
           </View>
           <View style={styles.inpMainWrapper}>
-            <Text style={[styles.inpLabel, {color: theme.text}]}>{t('name')}
-</Text>
+            <Text style={[styles.inpLabel, {color: theme.text}]}>Name</Text>
             <TextInput placeholderTextColor={theme.text} style={[styles.inpWrapper, {backgroundColor: theme.menuItemBG, borderColor: theme.emphasis, color: theme.text}]} />
           </View>
         </View>
         <View style={styles.editContainerFlexLower}>
           <View style={styles.tokenImportBtnWrapper}>
             <TouchableOpacity style={[styles.tokenImportButton, {borderColor: theme.buttonBorder}]}>
-              <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>{t('save_changes')}</Text>
+              <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>Save Changes</Text>
             </TouchableOpacity>
           </View>
         </View>

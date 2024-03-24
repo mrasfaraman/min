@@ -17,10 +17,6 @@ import { ThemeContext } from '../../context/ThemeContext';
 
 import { useAuth } from '../../context/AuthContext';
 import LinearGradient from 'react-native-linear-gradient';
-import {useTranslation} from 'react-i18next';
-import i18n from "../../pages/i18n";
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { importEVMToken, importSolToken } from '../../utils/function';
 import MaroonSpinner from '../Loader/MaroonSpinner';
@@ -40,20 +36,7 @@ const MainList = ({ navigation }) => {
         setActiveNet(data)
     }
 
-    const {t} = useTranslation();
-    useEffect(() => {
-      const loadSelectedLanguage = async () => {
-        try {
-          const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-          if (selectedLanguage) {
-            i18n.changeLanguage(selectedLanguage); 
-          }
-        } catch (error) {
-          console.error('Error loading selected language:', error);
-        }
-      };
-      loadSelectedLanguage();
-    }, []);
+
     const tokenevmUpdate = async (item, index) => {
         let responce = await importEVMToken(address.replace(/^"|"$/g, ''), activeNet?.nodeURL, activeNet?.networkName, item.token_address);
         updateToken(index, responce.data)
@@ -92,9 +75,9 @@ const MainList = ({ navigation }) => {
                     tokenevmUpdate(item, index)
                 }
             })
-        }, 2000);
+        }, 1000);
         return () => clearTimeout(timeoutId);
-    }, [selectedAccount, address])
+    }, [selectedAccount, address ])
 
 
 
@@ -141,13 +124,10 @@ const MainList = ({ navigation }) => {
             <TouchableOpacity onPress={() => sendTokenDetail(item)}>
                 <LinearGradient
                     colors={[theme.menuItemBG, theme.gradientB]} // Color at 0% and 100%
-                    start={{x: 0, y: 0}} // Corresponding to 135 degrees, this is the top left corner
-          end={{x: 1, y: 1}} // Corresponding to 135 degrees, this is the bottom right corner
-          style={[
-            styles.coinDetailWrapper,
-            {borderTopColor: theme.buttonBorder},
-          ]} // Set the style as needed
-        >
+                    start={{ x: 0, y: 0 }} // Corresponding to 135 degrees, this is the top left corner
+                    end={{ x: 1, y: 1 }}   // Corresponding to 135 degrees, this is the bottom right corner
+                    style={[styles.coinDetailWrapper, { borderTopColor: theme.buttonBorder }]}    // Set the style as needed
+                >
                     {/* Your component content */}
                     <View style={styles.coinDetailOne}>
                         <View style={styles.listCoinIconWrapper}>
@@ -165,7 +145,7 @@ const MainList = ({ navigation }) => {
 
                     <View>
                         <Text style={[styles.thirdCoinListDollar, { color: theme.text }]}> {Number(item.balance).toFixed(3)}  {item.symbol.toUpperCase()}</Text>
-                        <Text style={[styles.thirdCoinListCrypto, { color: theme.text }]}> {item.decimals} {t('decimals')} </Text>
+                        <Text style={[styles.thirdCoinListCrypto, { color: theme.text }]}> {item.decimals} Decimal</Text>
                     </View>
 
                 </LinearGradient>
@@ -175,6 +155,8 @@ const MainList = ({ navigation }) => {
 
     return (
       <View style={styles.mainWrapper}>
+       
+        {activeNet?.type == 'evm' || activeNet?.type == 'solana' ? (
         <View style={styles.mainListHeader}>
           <TouchableOpacity
             style={[
@@ -186,7 +168,7 @@ const MainList = ({ navigation }) => {
             ]}
             onPress={() => setPageSwitch('one')}>
             <Text style={[styles.listTabText, {color: theme.text}]}>
-            {t('assets')}
+              Assets
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -199,10 +181,19 @@ const MainList = ({ navigation }) => {
             ]}
             onPress={() => setPageSwitch('two')}>
             <Text style={[styles.listTabText, {color: theme.text}]}>
-            {t('history')}
+              History
             </Text>
           </TouchableOpacity>
+        </View>):(
+        <View>
+           <Text style={[styles.listTabText, {color: theme.text}]}>
+              History
+            </Text>
         </View>
+        )}
+      
+        {activeNet?.type == 'evm' || activeNet?.type == 'solana' ? (
+        <>
         {pageSwitch == 'one' && (
           <View>
             {address?.length === 23 ? (
@@ -219,7 +210,7 @@ const MainList = ({ navigation }) => {
                           justifyContent: 'center',
                           alignItems: 'center',
                         }}>
-                        <Text style={{color: theme.text}}>{t('no_token_found')}</Text>
+                        <Text style={{color: theme.text}}> No Token Found</Text>
                       </View>
                      : 
                       <FlatList
@@ -246,6 +237,22 @@ const MainList = ({ navigation }) => {
             )}
           </View>
         )}
+        </>
+        ):(
+          <>
+          <View>
+            {address?.length === 23 ? (
+              ''
+            ) : (
+              <View>
+                <Trancactions />
+              </View>
+            )}
+          </View>
+          </>
+        )}
+
+        
       </View>
     );
 }

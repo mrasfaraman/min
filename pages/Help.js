@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   Image,
   ScrollView,
@@ -21,26 +21,9 @@ import AppIssue from '../assets/images/app-issue.png';
 import HeadPhones from '../assets/images/headphones.png';
 import MessageIcon from '../assets/images/chat-dots.png';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Help = ({navigation}) => {
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage); 
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
   return (
     <ScrollView
       style={[styles.mainWrapper, {backgroundColor: theme.screenBackgroud}]}>
@@ -69,7 +52,7 @@ const Help = ({navigation}) => {
               <Image source={HelpCoupon} />
             </View>
             <Text style={[styles.helpLeftTexts, {color: theme.text}]}>
-            {t('support_ticket')}
+              support ticket
             </Text>
           </View>
           <View style={styles.helpCardRightFlex}>
@@ -96,7 +79,7 @@ const Help = ({navigation}) => {
                 <Image source={PaymentIssue} />
               </View>
               <Text style={[styles.helpLeftTexts, {color: theme.text}]}>
-              {t('payment_issues')}
+                Payment issues
               </Text>
             </View>
             <View style={styles.helpCardRightFlex}>
@@ -121,7 +104,7 @@ const Help = ({navigation}) => {
                 <Image source={AppIssue} />
               </View>
               <Text style={[styles.helpLeftTexts, {color: theme.text}]}>
-              {t('app_issues')}
+                App issues
               </Text>
             </View>
             <View style={styles.helpCardRightFlex}>
@@ -142,7 +125,7 @@ const Help = ({navigation}) => {
             </View>
           </View>
           <Text style={[styles.helpMessageText, {color: theme.text}]}>
-          {t('still_need_help_contact_our_support_team')}
+            still need help? contact our support team
           </Text>
           <TouchableOpacity
             style={[
@@ -151,7 +134,7 @@ const Help = ({navigation}) => {
             ]}
             onPress={() => navigation.navigate('Chat')}>
             <Text style={[styles.messageButtonText, {color: '#fff'}]}>
-            {t('message_us')}
+              Message Us
             </Text>
             <View>
               <Image source={MessageIcon} width={20} height={20} />

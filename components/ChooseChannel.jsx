@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
     Image,
     ScrollView,
@@ -13,34 +13,15 @@ import ChooseDrop from "../assets/images/choose_drop.png"
 import ChooseDropDark from "../assets/images/choose_drop_dark.png"
 import SwapBany from "../assets/images/swap_bany.png"
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from '../pages/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 
 const ChooseChannel = () => {
     const {theme} = useContext(ThemeContext);
     const data = [1, 1, 1]
-    
- const {t} = useTranslation();
- useEffect(() => {
-   const loadSelectedLanguage = async () => {
-     try {
-       const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-       if (selectedLanguage) {
-         i18n.changeLanguage(selectedLanguage); 
-       }
-     } catch (error) {
-       console.error('Error loading selected language:', error);
-     }
-   };
-   loadSelectedLanguage();
- }, []);
     return (
         <View style={[styles.mainWrapper, {backgroundColor: theme.menuItemBG}]}>
             <View style={styles.chooseHeaderFlex}>
-                <Text style={[styles.chooseLeftText, {color: theme.text}]}>{t('choose_channels')}</Text>
+                <Text style={[styles.chooseLeftText, {color: theme.text}]}>choose channels</Text>
                 <View>
                     <Image source={theme.type == 'dark' ? ChooseDrop : ChooseDropDark} />
                 </View>

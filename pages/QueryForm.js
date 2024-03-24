@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
     Image,
     ScrollView,
@@ -11,43 +11,26 @@ import {
 import Header from "../components/header";
 import UploadArrow from '../assets/images/upload-arrow.png';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const QueryForm = () => {
     const {theme} = useContext(ThemeContext);
-    const {t} = useTranslation();
-    useEffect(() => {
-      const loadSelectedLanguage = async () => {
-        try {
-          const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-          if (selectedLanguage) {
-            i18n.changeLanguage(selectedLanguage); 
-          }
-        } catch (error) {
-          console.error('Error loading selected language:', error);
-        }
-      };
-      loadSelectedLanguage();
-    }, []);
     return (
         <ScrollView style={[styles.mainWrapper, {backgroundColor: theme.screenBackgroud}]}>
             <Header title={"Query Form"} />
             <View style={styles.inpsMainWrapper}>
                 <View style={styles.inpTwoWrapper}>
                     <View style={styles.inpTwoNested}>
-                        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('name')}</Text>
+                        <Text style={[styles.inpLabel, {color: theme.text}]}>Name</Text>
                         <TextInput style={[styles.inpWrapper, {backgroundColor: theme.menuItemBG, borderColor: theme.emphasis}]} />
                     </View>
                     <View style={styles.inpTwoNested}>
-                        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('contact')}</Text>
+                        <Text style={[styles.inpLabel, {color: theme.text}]}>Contact</Text>
                         <TextInput style={[styles.inpWrapper, {backgroundColor: theme.menuItemBG, borderColor: theme.emphasis}]} />
                     </View>
                 </View>
                 <View style={styles.inpTwoNested}>
                     <View style={styles.inpSecOption}>
-                        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('add_attachment')}</Text>
+                        <Text style={[styles.inpLabel, {color: theme.text}]}>add Attachment</Text>
                         <Text style={[styles.inpSecOptionText, {color: theme.inpSecOptionText}]}>(optional)</Text>
                     </View>
                     <TouchableOpacity style={[styles.uploadBtnWrapper, {backgroundColor: theme.notificationWraperBG, borderColor: theme.emphasis}]}>
@@ -56,12 +39,12 @@ const QueryForm = () => {
                     </TouchableOpacity>
                 </View>
                 <View style={[styles.inpTwoNested, styles.spaceTop]}>
-                    <Text style={[styles.inpLabel, {color: theme.text}]}>{t('message')}</Text>
+                    <Text style={[styles.inpLabel, {color: theme.text}]}>Message</Text>
                     <TextInput style={[[styles.inpWrapper, {backgroundColor: theme.menuItemBG, borderColor: theme.emphasis}]]} multiline numberOfLines={6} />
                 </View>
                 <View style={styles.tokenImportBtnWrapper}>
                     <TouchableOpacity style={[styles.tokenImportButton, {borderColor: theme.buttonBorder}]}>
-                        <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>{t('import')}</Text>
+                        <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>Import</Text>
                     </TouchableOpacity>
                 </View>
             </View>

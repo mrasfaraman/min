@@ -1,49 +1,15 @@
 import React, {useContext} from 'react';
-import {
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {ThemeContext} from '../context/ThemeContext';
 
-interface Props extends TouchableOpacityProps {
-  title: string;
-  containerStyle: StyleProp<ViewStyle>;
-}
-export default function SubmitBtn({
-  title,
-  onPress,
-  containerStyle,
-  disabled,
-}: Props) {
+export default function SubmitBtn({title, onPress}) {
   const {theme} = useContext(ThemeContext);
   return (
-    <View style={[styles.btn, disabled && {opacity: 0.7}, containerStyle]}>
+    <View style={styles.btn}>
       <TouchableOpacity
-        style={[
-          styles.buttonStyle,
-          {
-            // borderColor: theme.buttonBorder,
-            borderColor: theme.addButtonBorder,
-            backgroundColor: theme.addButtonBG,
-          },
-        ]}
-        onPress={onPress}
-        disabled={disabled}>
-        <Text
-          style={[
-            styles.btnText,
-            {
-              color:
-                theme.name == 'theme3' ? theme.screenBackgroud : theme.text,
-            },
-          ]}>
-          {title}
-        </Text>
+        style={[styles.buttonStyle, {borderColor: theme.buttonBorder}]}
+        onPress={onPress}>
+        <Text style={[styles.btnText, {color: theme.text}]}>{title}</Text>
       </TouchableOpacity>
     </View>
   );

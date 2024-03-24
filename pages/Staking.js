@@ -14,40 +14,49 @@ import ListSearchDark from "../assets/images/list-search-dark.png"
 import PancakeImage from "../assets/images/staking-icon.png"
 import Header from '../components/header';
 import {ThemeContext} from '../context/ThemeContext';
-
-const Staking = () => {
+import { useAuth } from '../context/AuthContext';
+const Staking = ({navigation}) => {
     const {theme} = useContext(ThemeContext);
-    const data = [1, 1, 1, 1, 1, 1,]
+    const { Networks} = useAuth()
+    const data = Networks
 
-    const StakingCard = () => {
+    const StakingCard = (item) => {
+        // console.log(item.item.item)
+        if(item.item.index !== 3){
+            return ;
+        }
         return (
+            <TouchableOpacity onPress={()=>{navigation.navigate('NativeEvmos',{data : item.item.item})}}>
+
             <View style={styles.panCakeCardWrapper}>
                 <View style={styles.pancakeCardLeft}>
                     <View style={styles.pancakeLeftImgWrapper}>
-                        <Image style={styles.pancakeLeftImage} source={PancakeImage} />
+                        {/* <Text>{item.item.index}</Text> */}
+                        <Image style={[styles.pancakeLeftImage,{borderRadius:100}]}  source={{ uri: item.item.item.logo }}  />
                     </View>
                     <View>
-                        <Text style={[styles.pancakeLeftUpperText, {color: theme.text}]}>EVMOS</Text>
-                        <Text style={[styles.pancakeLeftLowerText, {color: theme.text}]}>evmos</Text>
+                        <Text style={[styles.pancakeLeftUpperText, {color: theme.text}]}>{item.item.item.networkName}</Text>
+                        <Text style={[styles.pancakeLeftLowerText, {color: theme.text}]}>{item.item.item.symbol}</Text>
                     </View>
                 </View>
                 <View style={styles.pancakeCardRight}>
-                    <Text style={[styles.pancakeRightUpperText, {color: theme.pancakeRightUpperText}]}>APR - 37.8%</Text>
+                    <Text style={[styles.pancakeRightUpperText, {color: theme.pancakeRightUpperText}]}>{item.item.item.type}</Text>
                 </View>
             </View>
+            </TouchableOpacity>
         )
     }
 
     return (
         <ScrollView style={[styles.MainWrapper, {backgroundColor: theme.screenBackgroud}]}>
-            <Header title='Staking' />
-            <View style={[styles.listSearchWrapper, {backgroundColor: theme.menuItemBG}]}>
+            <Header title='Staking' onBack={() => navigation.goBack()} />
+            {/* <View style={[styles.listSearchWrapper, {backgroundColor: theme.menuItemBG}]}>
                 <Image source={theme.type == 'dark' ? ListSearch : ListSearchDark} alt="search" />
                 <TextInput placeholder="Search Chains" style={[styles.listSearchText, {color: theme.text}]} placeholderTextColor={theme.text} />
-            </View>
+            </View> */}
             <FlatList
                 data={data}
-                renderItem={(item) => <StakingCard />}
+                renderItem={(item) => <StakingCard  item={item}/>} 
             />
         </ScrollView>
     )

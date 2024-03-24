@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {
   Image,
   ScrollView,
@@ -17,28 +17,10 @@ import SwapingIcon from '../assets/images/swaping_icon.png';
 import SwapingIconDark from '../assets/images/swaping_icon_dark.png';
 import ChooseChannel from '../components/ChooseChannel';
 import {ThemeContext} from '../context/ThemeContext';
-import {useTranslation} from 'react-i18next';
-import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import SubmitBtn from '../components/SubmitBtn';
-
 
 const Bridging = ({navigation}) => {
   const {theme} = useContext(ThemeContext);
-  const {t} = useTranslation();
-  useEffect(() => {
-    const loadSelectedLanguage = async () => {
-      try {
-        const selectedLanguage = await AsyncStorage.getItem('selectedLanguage');
-        if (selectedLanguage) {
-          i18n.changeLanguage(selectedLanguage);
-        }
-      } catch (error) {
-        console.error('Error loading selected language:', error);
-      }
-    };
-    loadSelectedLanguage();
-  }, []);
+
   const SwapCard = () => {
     return (
       <View
@@ -63,7 +45,7 @@ const Bridging = ({navigation}) => {
           {/*  */}
           <View style={styles.dropDownFlex}>
             <Text style={[styles.swapHeaderText, {color: theme.text}]}>
-              {t('token')}
+              Token
             </Text>
             <View style={styles.swapLeftSubFlex}>
               <View style={styles.currencyIconWrapper}>
@@ -80,9 +62,7 @@ const Bridging = ({navigation}) => {
         </View>
         {/*  */}
         <View style={styles.amountWrapper}>
-          <Text style={[styles.ammountText, {color: theme.text}]}>
-            {t('amount')}
-          </Text>
+          <Text style={[styles.ammountText, {color: theme.text}]}>Amount</Text>
           <View style={styles.amountInpWrapperFlex}>
             <TextInput
               style={[
@@ -92,25 +72,14 @@ const Bridging = ({navigation}) => {
               placeholder="0.000"
               placeholderTextColor={theme.text}
             />
-            <TouchableOpacity
-              style={[
-                styles.swapMaxBtnWrapper,
-                {borderColor: theme.buttonBorder},
-              ]}>
-              <Text style={[styles.swapMaxBtnText, {color: theme.text}]}>
-                {' '}
-                {t('max')}
-              </Text>
+            <TouchableOpacity style={[styles.swapMaxBtnWrapper, {borderColor: theme.buttonBorder}]}>
+              <Text style={[styles.swapMaxBtnText, {color: theme.text}]}>max</Text>
             </TouchableOpacity>
           </View>
         </View>
         <View style={styles.balanceWrapperFlex}>
-          <Text style={[styles.swapBalanceLabel, {color: theme.text}]}>
-            {t('balance')}
-          </Text>
-          <Text style={[styles.swapBalance, {color: theme.emphasis}]}>
-            1.50129603 KDA
-          </Text>
+          <Text style={[styles.swapBalanceLabel, {color: theme.text}]}>balance</Text>
+          <Text style={[styles.swapBalance, {color: theme.emphasis}]}>1.50129603 KDA</Text>
         </View>
       </View>
     );
@@ -119,40 +88,25 @@ const Bridging = ({navigation}) => {
   return (
     <ScrollView
       style={[styles.mainWrapper, {backgroundColor: theme.screenBackgroud}]}>
-      <Header title={t('bridging')} onBack={() => navigation.goBack()} />
+      <Header title={'Bridging'} onBack={() => navigation.goBack()} />
       <View style={styles.swapWrapper}>
         <SwapCard />
         <View style={styles.swapBtnFlexWrapper}>
-          <TouchableOpacity
-            style={[styles.swapBtn, {backgroundColor: theme.rightArrowBG}]}>
-            <Image
-              source={theme.type == 'dark' ? SwapingIcon : SwapingIconDark}
-            />
+          <TouchableOpacity style={[styles.swapBtn, {backgroundColor: theme.rightArrowBG}]}>
+            <Image source={theme.type == 'dark' ? SwapingIcon : SwapingIconDark} />
           </TouchableOpacity>
         </View>
       </View>
       <SwapCard />
       <View style={styles.gasFeeFlex}>
-        <Text style={[styles.gasFeeLabel, {color: theme.text}]}>
-          {t('gas_fee')}
-        </Text>
-        <Text style={[styles.gasFee, {color: theme.emphasis}]}>
-          {t('gas_fee')}
-        </Text>
+        <Text style={[styles.gasFeeLabel, {color: theme.text}]}>gas FEE</Text>
+        <Text style={[styles.gasFee, {color: theme.emphasis}]}>gas FEE</Text>
       </View>
       <ChooseChannel />
       <View style={styles.tokenImportBtnWrapper}>
-        <SubmitBtn
-          title="Save Changes"
-          // onPress={() => {}}
-          containerStyle={{marginHorizontal: 0}}
-        />
-        {/* <TouchableOpacity
-          style={[styles.tokenImportButton, {borderColor: theme.buttonBorder}]}>
-          <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>
-            Save Changes
-          </Text>
-        </TouchableOpacity> */}
+        <TouchableOpacity style={[styles.tokenImportButton, {borderColor: theme.buttonBorder}]}>
+          <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>Save Changes</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );

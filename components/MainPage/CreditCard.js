@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   Image,
   StyleSheet,
@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
   ImageBackground,
-  Clipboard,
+  Clipboard
 } from 'react-native';
 import BackImage from '../../assets/images/doodle.png';
 import ThreeDot from '../../assets/images/three-dot.png';
@@ -20,11 +20,12 @@ import SwapIcon from '../../assets/images/swap_icon.png';
 import SwapIconDark from '../../assets/images/swap_icon_dark.png';
 import BridgingIcon from '../../assets/images/bridging_icon.png';
 import BridgingDark from '../../assets/images/bridging_icon_dark.png';
-
-import {ThemeContext} from '../../context/ThemeContext';
-import {DoodleContext} from '../../context/DoodleContext';
-import {getSolBalance, getEVMBalance} from '../../utils/function';
-import {useAuth} from '../../context/AuthContext';
+import StakingIcon from '../../assets/images/bottom-center.png';
+import StakingDark from '../../assets/images/bottom-center-dark.png';
+import { ThemeContext } from '../../context/ThemeContext';
+import { DoodleContext } from '../../context/DoodleContext';
+import { getSolBalance, getEVMBalance , getBTCBalance , getdogeBalance, gettronBalance} from '../../utils/function';
+import { useAuth } from '../../context/AuthContext';
 import {useTranslation} from 'react-i18next';
 import i18n from "../../pages/i18n";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -34,41 +35,28 @@ import {
   setUpdateIntervalForType,
   SensorTypes,
 } from 'react-native-sensors';
-setUpdateIntervalForType(SensorTypes.accelerometer, 50); // defaults to 100ms
+setUpdateIntervalForType(SensorTypes.accelerometer, 50);
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 
 
-
-import {
-  ALERT_TYPE,
-  Dialog,
-  AlertNotificationRoot,
-  Toast,
-} from 'react-native-alert-notification';
-
-const CreditCard = ({
-  getOpenCustomizer,
-  customizerVal,
-  navigation,
-  isOpen,
-  activeAccount,
-  address,
-}) => {
-  const {theme} = useContext(ThemeContext);
-  const {doodle, doodleBG} = useContext(DoodleContext);
-  const {selectedNetwork, Networks, selectedAccount} = useAuth();
+const CreditCard = ({ getOpenCustomizer, customizerVal, navigation, isOpen, activeAccount, address }) => {
+  const { theme } = useContext(ThemeContext);
+  const { doodle, doodleBG } = useContext(DoodleContext);
+  const { selectedNetwork, Networks , selectedAccount } = useAuth()
   const [ballance, setBalance] = useState(0);
-  const [activeNet, setActiveNet] = useState();
-  const [hideFullAddress, setHideFullAddress] = useState(true);
+  const [activeNet, setActiveNet] = useState()
 
 
   const getNetworkactive = async () => {
-    let data = await JSON.parse(selectedNetwork);
-    setActiveNet(data);
-  };
+    let data = await JSON.parse(selectedNetwork)
+    setActiveNet(data)
+  }
 
   useEffect(() => {
-    getNetworkactive();
-  }, [selectedNetwork, Networks]);
+    getNetworkactive()
+  }, [selectedNetwork, Networks])
+
+
 
   const handleCopyText = () => {
     Clipboard.setString(address.replace(/^"|"$/g, ''));
@@ -76,21 +64,31 @@ const CreditCard = ({
       type: ALERT_TYPE.SUCCESS,
       title: 'Copied',
       textBody: 'Copy to Clipboard',
-    });
+    })
+
   };
 
   const getbls = async () => {
-    if (activeNet?.type === 'evm') {
-      let data = await getEVMBalance(
-        address.replace(/^"|"$/g, ''),
-        activeNet?.nodeURL,
-      );
-      setBalance(data?.balance);
-    } else {
-      let data = await getSolBalance(address.replace(/^"|"$/g, ''));
-      setBalance(data?.balance);
+    if (activeNet?.type === "evm") {
+      let data = await getEVMBalance(address.replace(/^"|"$/g, ''), activeNet?.nodeURL)
+      setBalance(data?.balance)
+    }else if(activeNet?.type === "btc"){
+      // console.log(address)
+      let data = await getBTCBalance(address.replace(/^"|"$/g, ''))
+      setBalance(data?.balance)
+    }else if(activeNet?.type === "tron"){
+      console.log(address)
+      let data = await gettronBalance(address.replace(/^"|"$/g, ''))
+      setBalance(data?.balance)
+    }else if(activeNet?.type === "doge"){
+      // console.log(address)
+      let data = await getdogeBalance(address.replace(/^"|"$/g, ''))
+      setBalance(data?.balance)
+    }else {
+      let data = await getSolBalance(address.replace(/^"|"$/g, ''))
+      setBalance(data?.balance)
     }
-  };
+  }
   const {t} = useTranslation();
   useEffect(() => {
     const loadSelectedLanguage = async () => {
@@ -105,63 +103,57 @@ const CreditCard = ({
     };
     loadSelectedLanguage();
   }, []);
+
   useEffect(() => {
-    getbls();
+    getbls()
     const intervalId = setInterval(getbls, 10000);
     return () => clearInterval(intervalId);
-  }, [Networks, address, activeAccount, selectedNetwork, activeNet]);
+  }, [Networks, address, activeAccount , selectedNetwork ,activeNet])
+    
+  useEffect(()=>{
+      getbls()
+    },[selectedAccount])
+  
+    useEffect(() => {
+      // Subscribe to accelerometer data
+      const subscription = accelerometer.subscribe(({x, y, z}) => {
+        // Calculate the magnitude of acceleration
+        const acceleration = Math.sqrt(x * x + y * y + z * z);
+  
+        // Threshold for detecting shake (adjust as needed)
+        const shakeThreshold = 25;
+  
+        // Check if the magnitude of acceleration exceeds the threshold
+        if (acceleration > shakeThreshold) {
+          // Shake gesture detected, handle accordingly
+          console.log('Shake detected!', hideFullAddress);
+          setHideFullAddress(prev => !prev);
+        }
+      });
 
-  useEffect(() => {
-    getbls();
-  }, [selectedAccount]);
+      return () => {
+        subscription.unsubscribe();
+      };
+    }, []);
 
-  useEffect(() => {
-    // Subscribe to accelerometer data
-    const subscription = accelerometer.subscribe(({x, y, z}) => {
-      // Calculate the magnitude of acceleration
-      const acceleration = Math.sqrt(x * x + y * y + z * z);
-
-      // Threshold for detecting shake (adjust as needed)
-      const shakeThreshold = 25;
-
-      // Check if the magnitude of acceleration exceeds the threshold
-      if (acceleration > shakeThreshold) {
-        // Shake gesture detected, handle accordingly
-        console.log('Shake detected!', hideFullAddress);
-        setHideFullAddress(prev => !prev);
-      }
-    });
-
-    // Cleanup: unsubscribe from accelerometer data when component unmounts
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-
-  return (
+    return (
     <ImageBackground
       source={doodle}
       resizeMode="cover"
-      style={[styles.cardWrapper, {backgroundColor: doodleBG}]}>
+      style={[styles.cardWrapper, { backgroundColor: doodleBG }]}>
       <View style={styles.cardHeader}>
         <View>
+
           <Text style={[styles.cardAmount, {color: theme.cardtext}]}>
-            {address?.length === 23 ? (
-              'Account Not Available'
-            ) : (
-              <>
-                &nbsp;
-                {Number(ballance).toFixed(5)
-                  ? hideFullAddress
-                    ? Number(ballance)
-                        .toFixed(5)
-                        .replace(/[^\]](?![^\[]*\])/g, '*')
-                    : Number(ballance).toFixed(5)
-                  : '0.00'}{' '}
-                {activeNet?.symbol}
-              </>
-            )}
+            {
+              address?.length === 23 ?
+                "Account Not Available"
+                : 
+                <>
+                  &nbsp;{Number(ballance).toFixed(5) ? Number(ballance).toFixed(5) : '0.00'}  {activeNet?.symbol}
+                </>
+            }
+
           </Text>
         </View>
         <View>
@@ -177,10 +169,11 @@ const CreditCard = ({
       <View
         style={[
           styles.walletAddressWrapper,
-          {backgroundColor: theme.rightArrowBG},
+          { backgroundColor: theme.rightArrowBG },
         ]}>
         <View>
-          <Text style={[styles.walletAddressText, {color: theme.text}]}>
+
+          <Text style={[styles.walletAddressText, { color: theme.text }]}>
             <>
             {t('address')}:{' '}
               {address
@@ -191,111 +184,170 @@ const CreditCard = ({
                 t('loading')
 
                 }
-            </>
+                </>
           </Text>
+
         </View>
         <View>
           <TouchableOpacity
             onPress={() => handleCopyText()}
             style={[
               styles.addressCopyWrapper,
-              {backgroundColor: theme.emphasis},
+              { backgroundColor: theme.emphasis },
             ]}>
             <Image source={AddressCopy} />
           </TouchableOpacity>
         </View>
       </View>
       {/*  */}
-      {address?.length === 23 ? (
-        ''
-      ) : (
-        <View style={styles.cardBtnFlex}>
-          <View>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('Buy', {
-                  account: selectedAccount,
-                  amount: Number(ballance),
-                  network: activeNet,
-                })
-              }>
-              <View
-                style={[
-                  styles.cardBtnsWrapper,
-                  {backgroundColor: theme.rightArrowBG},
-                ]}>
-                <Image source={theme.type == 'dark' ? BuyIcon : BuyIconDark} />
-              </View>
-            </TouchableOpacity>
-            <View>
-              <Text style={[styles.btnsLabel, {color: theme.text}]}>{t('send')}</Text>
+      { address?.length === 23 ? "" :
+      <View style={styles.cardBtnFlex}>
+        <View>
+          <TouchableOpacity onPress={() => navigation.navigate('Buy',{ account: selectedAccount, amount:Number(ballance) , network : activeNet})}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image source={theme.type == 'dark' ? BuyIcon : BuyIconDark} />
             </View>
-          </View>
+          </TouchableOpacity>
           <View>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate('Sell', {
-                  account: address,
-                  network: activeNet,
-                })
-              }>
-              <View
-                style={[
-                  styles.cardBtnsWrapper,
-                  {backgroundColor: theme.rightArrowBG},
-                ]}>
-                <Image
-                  source={theme.type == 'dark' ? SellIcon : SellIconDark}
-                />
-              </View>
-            </TouchableOpacity>
-            <View>
-              <Text style={[styles.btnsLabel, {color: theme.text}]}>
-              {t('receive')}
-              </Text>
-            </View>
-          </View>
-          <View>
-            <TouchableOpacity
-              onPress={() => {
-                activeNet?.type === 'evm'
-                  ? navigation.navigate('swapevm')
-                  : navigation.navigate('Swap');
-              }}>
-              <View
-                style={[
-                  styles.cardBtnsWrapper,
-                  {backgroundColor: theme.rightArrowBG},
-                ]}>
-                <Image
-                  source={theme.type == 'dark' ? SwapIcon : SwapIconDark}
-                />
-              </View>
-            </TouchableOpacity>
-            <View>
-              <Text style={[styles.btnsLabel, {color: theme.text}]}>{t('swap')}</Text>
-            </View>
-          </View>
-          <View>
-            <TouchableOpacity onPress={() => navigation.navigate('Bridging')}>
-              <View
-                style={[
-                  styles.cardBtnsWrapper,
-                  {backgroundColor: theme.rightArrowBG},
-                ]}>
-                <Image
-                  source={theme.type == 'dark' ? BridgingIcon : BridgingDark}
-                />
-              </View>
-            </TouchableOpacity>
-            <View>
-              <Text style={[styles.btnsLabel, {color: theme.text}]}>
-              {t('bridging')}
-              </Text>
-            </View>
+          <Text style={[styles.btnsLabel, {color: theme.text}]}>{t('send')}</Text>
           </View>
         </View>
-      )}
+        <View>
+          <TouchableOpacity onPress={() => navigation.navigate('Sell',{ account: address, network : activeNet})}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image source={theme.type == 'dark' ? SellIcon : SellIconDark} />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: theme.type == 'dark' ? theme.text : 'white' }]}>Receive</Text>
+          </View>
+        </View>
+        {activeNet?.type === "btc" || activeNet?.type === "tron" || activeNet?.type === "doge" ? 
+        <>
+          <View>
+          <TouchableOpacity disabled onPress={() => {activeNet?.type === "evm" ? navigation.navigate('swapevm'):navigation.navigate('Swap')}}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image source={theme.type == 'dark' ? SwapIcon : SwapIconDark} />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: 'gray' }]}>Swap</Text>
+          </View>
+        </View>
+        <View>
+          <TouchableOpacity disabled onPress={() => navigation.navigate('Bridging')}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image
+                source={theme.type == 'dark' ? BridgingIcon : BridgingDark}
+              />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: 'gray' }]}>
+              Bridging
+            </Text>
+          </View>
+        </View>
+    
+        </>
+        :
+      <>
+        <View>
+          <TouchableOpacity onPress={() => {activeNet?.type === "evm" ? navigation.navigate('swapevm'):navigation.navigate('Swap')}}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image source={theme.type == 'dark' ? SwapIcon : SwapIconDark} />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, {color: theme.type == 'dark' ? theme.text : 'white' }]}>Swap</Text>
+          </View>
+        </View>
+        <View>
+          <TouchableOpacity onPress={() => navigation.navigate('Bridging')}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image
+                source={theme.type == 'dark' ? BridgingIcon : BridgingDark}
+              />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: theme.type == 'dark' ? theme.text : 'white'}]}>
+              Bridging
+            </Text>
+          </View>
+        </View>
+       
+      </>
+        }
+        {activeNet?.type === "btc" || activeNet?.type === "tron" || activeNet?.type === "doge" || activeNet?.type === "evm" ? 
+        <>
+        <View>
+          <TouchableOpacity disabled onPress={() => navigation.navigate('Staking')}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image
+                source={theme.type == 'dark' ? StakingIcon : StakingDark   }
+              />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: 'gray' }]}>
+              Staking
+            </Text>
+          </View>
+        </View>
+        </>
+        :
+      <>
+        <View>
+          <TouchableOpacity onPress={() => navigation.navigate('Staking')}>
+            <View
+              style={[
+                styles.cardBtnsWrapper,
+                { backgroundColor: theme.rightArrowBG },
+              ]}>
+              <Image
+                source={theme.type == 'dark' ? StakingIcon : StakingDark   }
+              />
+            </View>
+          </TouchableOpacity>
+          <View>
+            <Text style={[styles.btnsLabel, { color: theme.type == 'dark' ? theme.text : 'white' }]}>
+              Staking
+            </Text>
+          </View>
+        </View>
+      </>
+        }
+      </View>
+      }
     </ImageBackground>
   );
 };

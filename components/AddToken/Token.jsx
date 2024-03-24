@@ -20,7 +20,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SubmitBtn from '../SubmitBtn';
 
 
-
 const Token = ({navigation}) => {
   const {theme} = useContext(ThemeContext);
   const {addToken, selectedNetwork, selectedAccount , Tokens} = useAuth();
@@ -143,7 +142,7 @@ const Token = ({navigation}) => {
       {loader ? <MaroonSpinner /> : 
       <>
       <View style={styles.inpMainWrapper}>
-        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('address')}</Text>
+      <Text style={[styles.inpLabel, {color: theme.text}]}>{t('address')}</Text>
         
         <TextInput
         value={tokenDetail?.tokenAddress}
@@ -160,7 +159,7 @@ const Token = ({navigation}) => {
         />
       </View>
       <View style={styles.inpMainWrapper}>
-        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('symbol')}</Text>
+      <Text style={[styles.inpLabel, {color: theme.text}]}>{t('symbol')}</Text>
         <View
           style={[
             styles.inpWrapper,
@@ -175,7 +174,7 @@ const Token = ({navigation}) => {
           </View>
       </View>
       <View style={styles.inpMainWrapper}>
-        <Text style={[styles.inpLabel, {color: theme.text}]}>{t('decimals')}</Text>
+      <Text style={[styles.inpLabel, {color: theme.text}]}>{t('decimals')}</Text>
         <View
           style={[
             styles.inpWrapper,
@@ -190,7 +189,7 @@ const Token = ({navigation}) => {
           </View>
       </View>
       <View style={styles.tokenImportBtnWrapper}>
-            <SubmitBtn
+      <SubmitBtn
               title={!toggle ? 'Import' : 'Add Token'}
               onPress={() =>
                 !toggle
@@ -199,21 +198,7 @@ const Token = ({navigation}) => {
               }
               containerStyle={{marginHorizontal: 0}}
             />
-            {/* <TouchableOpacity
-              onPress={() =>
-                !toggle
-                  ? importToken(selectedNetworkParse)
-                  : addTokenDetail(importedToken)
-              }
-              style={[
-                styles.tokenImportButton,
-                {borderColor: theme.buttonBorder},
-              ]}>
-              <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>
-                {!toggle ? 'Import' : 'Add Token'}
-              </Text>
-            </TouchableOpacity> */}
-          </View>
+      </View>
       </>
       }
     </View>

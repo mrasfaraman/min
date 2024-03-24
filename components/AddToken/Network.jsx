@@ -9,30 +9,29 @@ import {
     TextInput,
     FlatList
 } from 'react-native';
-import {ThemeContext} from '../../context/ThemeContext';
-import {useAuth} from '../../context/AuthContext';
-import {
-  ALERT_TYPE,
-  Dialog,
-  AlertNotificationRoot,
-  Toast,
-} from 'react-native-alert-notification';
+import { ThemeContext } from '../../context/ThemeContext';
+import { useAuth } from '../../context/AuthContext';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
+import { ValidateEvmNetworks } from '../../utils/function';
+import MaroonSpinner from '../Loader/MaroonSpinner';
 import SubmitBtn from '../SubmitBtn';
 import {useTranslation} from 'react-i18next';
 import i18n from '../../pages/i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NetWork = ({navigation}) => {
-    const {theme} = useContext(ThemeContext);
-  const {addNetwork} = useAuth();
-  const [networkValues, setNetworkValue] = useState({
-    networkId: '',
-    networkName: '',
-    symbol: '',
-    nodeURL: '',
-    explorerURL: '',
-    type: '',
-  });
+    const { theme } = useContext(ThemeContext);
+    const { addNetwork } = useAuth()
+    const [loadre , setLoader]= useState(false);
+    
+    const [networkValues, setNetworkValue] = useState({
+        networkId: "",
+        networkName: "",
+        symbol: "",
+        nodeURL: "",
+        explorerURL: "",
+        type:"",
+    })
     const {t} = useTranslation();
     useEffect(() => {
       const loadSelectedLanguage = async () => {
@@ -47,6 +46,7 @@ const NetWork = ({navigation}) => {
       };
       loadSelectedLanguage();
     }, []);
+
     useEffect(() => {
         const type = networkValues.symbol === "solana" ? "solana" : "evm";
         setNetworkValue(prevState => ({
@@ -55,7 +55,27 @@ const NetWork = ({navigation}) => {
         }));
       }, [networkValues.symbol]);
 
-    const updateNetworkValue = (key, value) => {
+const updateChain = async (cid) => {
+    updateNetworkValue('networkId', cid)
+}
+
+    const updateNetworkValue = async (key, value) => {
+        if(key == 'nodeURL'){
+            try{
+                setLoader(true)
+                const NetworkValidate = await ValidateEvmNetworks(value)
+                if(NetworkValidate.success){
+                    console.log(NetworkValidate.id.toString())
+                    updateChain(NetworkValidate.id.toString())
+                    setLoader(false)
+                }else{
+                    updateChain('')
+                    setLoader(false)
+                }
+            }catch(error){
+                setLoader(false)
+            }
+        }
         setNetworkValue(prevState => ({
             ...prevState,
             [key]: value
@@ -79,32 +99,47 @@ const NetWork = ({navigation}) => {
         // Return the errors object; if it's empty, validation passed
         return errors;
       };
-    const addNetworkDetail = () => {
+    const addNetworkDetail = async () => {
+        setLoader(true)
+        try{
         const validationErrors = validateNetworkValues(networkValues);
-        
-        // Check if there are any errors
-        if (Object.keys(validationErrors).length === 0) {
-            addNetwork(networkValues);
-            navigation.navigate('SettingsScreen')
+
+        const NetworkValidate = await ValidateEvmNetworks(networkValues?.nodeURL)
+      
+        if (Object.keys(validationErrors).length === 0) {   
+            if(NetworkValidate.success){
+                addNetwork(networkValues);
+                navigation.navigate('SettingsScreen')
+                setLoader(false)
+            }else{
+                setLoader(false)
+                Toast.show({
+                    type: ALERT_TYPE.WARNING,
+                    title: 'Invalid Network',
+                    textBody: 'Network is not Valid Try Another',
+                })
+            }
+
         } else {
-            // Handle the errors, e.g., by showing them to the user
+            setLoader(false)
             Toast.show({
-                type: ALERT_TYPE.WARNING,
-                title: 'Invalid Network',
-                textBody: 'Network is not Valid',
+                type: ALERT_TYPE.INFO,
+                title: 'Empty Fields',
+                textBody: 'Field Cannot be Empty',
               })
-            // Example: Set these errors in state to display them in the UI
         }
+     
+    }catch(error){
+        setLoader(false)
+    }
     
     }
 
     return (
         <View style={styles.mainWrapper}>
-            <View style={styles.inpTwoWrapper}>
-                <View style={styles.inpTwoNested}>
-                    <Text style={[styles.inpLabel, { color: theme.text }]}>{t('network_id')} </Text>
-                    <TextInput
-            style={[
+            <View style={styles.inpMainWrapper}>
+                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('Node_URL')} </Text>
+                <TextInput  style={[
               styles.inpWrapper,
               {
                 backgroundColor: theme.menuItemBG,
@@ -112,90 +147,82 @@ const NetWork = ({navigation}) => {
                 borderColor: theme.addButtonBorder,
                 borderWidth: 1,
               },
-            ]} placeholderTextColor={theme.text}
+            ]}  placeholderTextColor={theme.text}
+                    onChangeText={(text) => updateNetworkValue('nodeURL', text)}
+                />
+            </View>
+            <View style={styles.inpTwoWrapper}>
+
+            <View style={styles.inpTwoNested}>
+                    <Text style={[styles.inpLabel, { color: theme.text }]}>{t('Chain_ID')}</Text>
+                    <TextInput style={[
+              styles.inpWrapper,
+              {
+                backgroundColor: theme.menuItemBG,
+                color: theme.text,
+                borderColor: theme.addButtonBorder,
+                borderWidth: 1,
+              },
+            ]}   placeholderTextColor={theme.text}
                         onChangeText={(text) => updateNetworkValue('networkId', text)}
+                        value={networkValues.networkId}
                     />
-                </View>
+            </View>
+
                 {/* <View style={styles.inpTwoNested}>
                     <Text style={[styles.inpLabel, { color: theme.text }]}>Chainlist</Text>
                     <TextInput style={[styles.inpWrapper, { backgroundColor: theme.menuItemBG, color: theme.text }]} placeholderTextColor={theme.text} />
                 </View> */}
             </View>
             <View style={styles.inpMainWrapper}>
-                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('name')}</Text>
-                <TextInput
-          style={[
-            styles.inpWrapper,
-            {
-              backgroundColor: theme.menuItemBG,
-              color: theme.text,
-              borderColor: theme.addButtonBorder,
-              borderWidth: 1,
-            },
-          ]} placeholderTextColor={theme.text}
+                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('Name')}</Text>
+                <TextInput style={[
+              styles.inpWrapper,
+              {
+                backgroundColor: theme.menuItemBG,
+                color: theme.text,
+                borderColor: theme.addButtonBorder,
+                borderWidth: 1,
+              },
+            ]}  placeholderTextColor={theme.text}
                     onChangeText={(text) => updateNetworkValue('networkName', text)}
                 />
             </View>
             <View style={styles.inpMainWrapper}>
-                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('symbol')}</Text>
-                <TextInput
-          style={[
-            styles.inpWrapper,
-            {
-              backgroundColor: theme.menuItemBG,
-              color: theme.text,
-              borderColor: theme.addButtonBorder,
-              borderWidth: 1,
-            },
-          ]} placeholderTextColor={theme.text}
+                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('Symbol')}</Text>
+                <TextInput style={[
+              styles.inpWrapper,
+              {
+                backgroundColor: theme.menuItemBG,
+                color: theme.text,
+                borderColor: theme.addButtonBorder,
+                borderWidth: 1,
+              },
+            ]}   placeholderTextColor={theme.text}
                     onChangeText={(text) => updateNetworkValue('symbol', text)}
                 />
             </View>
+       
             <View style={styles.inpMainWrapper}>
-                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('node_url')}</Text>
-                <TextInput
-          style={[
-            styles.inpWrapper,
-            {
-              backgroundColor: theme.menuItemBG,
-              color: theme.text,
-              borderColor: theme.addButtonBorder,
-              borderWidth: 1,
-            },
-          ]} placeholderTextColor={theme.text}
-                    onChangeText={(text) => updateNetworkValue('nodeURL', text)}
-                />
-            </View>
-            <View style={styles.inpMainWrapper}>
-                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('explorer_url')}</Text>
-                <TextInput
-          style={[
-            styles.inpWrapper,
-            {
-              backgroundColor: theme.menuItemBG,
-              color: theme.text,
-              borderColor: theme.addButtonBorder,
-              borderWidth: 1,
-            },
-          ]} placeholderTextColor={theme.text}
+                <Text style={[styles.inpLabel, { color: theme.text }]}>{t('explore_URL')}</Text>
+                <TextInput style={[
+              styles.inpWrapper,
+              {
+                backgroundColor: theme.menuItemBG,
+                color: theme.text,
+                borderColor: theme.addButtonBorder,
+                borderWidth: 1,
+              },
+            ]}   placeholderTextColor={theme.text}
                     onChangeText={(text) => updateNetworkValue('explorerURL', text)}
                 />
             </View>
-            <View style={styles.tokenImportBtnWrapper}>
+            {loadre ? <MaroonSpinner /> :
             <SubmitBtn
-          title="Add Network"
+          title={t('Add_Network')}
           onPress={() => addNetworkDetail()}
           containerStyle={{marginHorizontal: 0}}
-        />
-        {/* <TouchableOpacity
-          style={[styles.tokenImportButton, {borderColor: theme.buttonBorder}]}
-          onPress={() => addNetworkDetail()}>
-          <Text style={[styles.tokenImportButtonText, {color: theme.text}]}>
-            Add Network
-          </Text>
-        </TouchableOpacity> */}
-                    {/* <Text style={[styles.tokenImportButtonText, { color: theme.text }]}>{t('add_network')}</Text> */}
-            </View>
+        />}
         </View>
     )
 }
